@@ -37,6 +37,7 @@ aws-vpc:
         isDefaultGateway: true
         hostNat: true
         hairpinMode: true
+        isAWSVPC: true
         mtu: ${MTU}
         ipam:
           type: rancher-host-local-ipam
