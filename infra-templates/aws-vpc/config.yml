@@ -1,0 +1,8 @@
+name: Rancher AWS VPC Networking
+description: |
+  Rancher Networking plugin using AWS VPC.
+version: v0.0.1
+category: Networking
+labels:
+  io.rancher.certified: rancher
+  io.rancher.orchestration.supported: 'cattle'
