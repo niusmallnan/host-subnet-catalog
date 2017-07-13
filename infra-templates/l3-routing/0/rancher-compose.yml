@@ -38,6 +38,7 @@ l3-routing:
         hostNat: true
         hairpinMode: true
         forceTagTraffic: true
+		isL3Routing: true
         mtu: ${MTU}
         ipam:
           type: rancher-host-local-ipam
