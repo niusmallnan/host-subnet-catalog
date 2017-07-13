@@ -1,6 +1,6 @@
-name: Rancher AWS VPC Networking
+name: Rancher L3-Routing Networking
 description: |
-  Rancher Networking plugin using AWS VPC.
+  Rancher Networking plugin using l3 routing.
 version: v0.0.1
 category: Networking
 labels:

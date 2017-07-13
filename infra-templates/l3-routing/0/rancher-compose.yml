@@ -1,5 +1,5 @@
 .catalog:
-  name: "aws-vpc"
+  name: "l3-routing"
   version: "v0.0.1"    # Keep this in sync with calico/node tag version
   questions:
     - variable: "LOG_LEVEL"
@@ -18,26 +18,26 @@
       default: 1500
       type: int
 
-aws-vpc:
+l3-routing:
   network_driver:
-    name: Rancher AWS VPC
+      name: Rancher L3 Routing
     default_network:
-      name: aws-vpc
+      name: l3-routing
       host_ports: true
       dns:
       - 169.254.169.250
       dns_search:
       - rancher.internal
     cni_config:
-      '10-aws-vpc.conf':
-        name: aws-vpc-network
+      '10-l3-routing.conf':
+        name: l3-routing-network
         type: rancher-bridge
         bridge: docker0
         log_level: ${LOG_LEVEL}
         isDefaultGateway: true
         hostNat: true
         hairpinMode: true
-        isAWSVPC: true
+        forceTagTraffic: true
         mtu: ${MTU}
         ipam:
           type: rancher-host-local-ipam
