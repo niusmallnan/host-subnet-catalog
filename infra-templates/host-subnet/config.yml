@@ -1,6 +1,6 @@
-name: Rancher L3-Routing Networking
+name: Rancher Host-subnet Networking
 description: |
-  Rancher Networking plugin using l3 routing.
+  Rancher Networking plugin using host-subnet.
 version: v0.0.1
 category: Networking
 labels:

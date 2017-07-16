@@ -1,8 +1,8 @@
 version: '2'
 services:
-  l3-routing:
+  host-subnet:
     privileged: true
-    image: niusmallnan/rancher-l3-routing:v0.0.1
+    image: niusmallnan/rancher-host-subnet:v0.0.1
     command: sh -c "touch /var/log/rancher-cni.log && exec tail ---disable-inotify -F /var/log/rancher-cni.log"
     network_mode: host
     pid: host
@@ -10,6 +10,7 @@ services:
       io.rancher.network.cni.binary: 'rancher-bridge'
       io.rancher.container.dns: 'true'
       io.rancher.scheduler.global: 'true'
+      io.rancher.network.tag_traffic: 'true'
     logging:
       driver: json-file
       options:
