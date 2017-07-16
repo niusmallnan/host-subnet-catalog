@@ -6,6 +6,8 @@ services:
     command: sh -c "touch /var/log/rancher-cni.log && exec tail ---disable-inotify -F /var/log/rancher-cni.log"
     network_mode: host
     pid: host
+    volumes:
+    - /var/lib/rancher/host_subnet:/var/lib/cni/networks
     labels:
       io.rancher.network.cni.binary: 'rancher-bridge'
       io.rancher.container.dns: 'true'
