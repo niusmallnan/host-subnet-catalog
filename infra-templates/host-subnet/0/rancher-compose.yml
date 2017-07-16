@@ -1,6 +1,8 @@
 .catalog:
   name: "host-subnet"
   version: "v0.0.1"    # Keep this in sync with calico/node tag version
+  minimum_rancher_version: v1.6.0-alpha1
+  maximum_rancher_version: v1.6.2
   questions:
     - variable: "RANCHER_DEBUG"
       label: "Enable Debug Logs"
