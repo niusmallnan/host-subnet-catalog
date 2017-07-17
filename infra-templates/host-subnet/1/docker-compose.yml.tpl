@@ -12,7 +12,7 @@ services:
       io.rancher.network.cni.binary: 'rancher-bridge'
       io.rancher.container.dns: 'true'
       io.rancher.scheduler.global: 'true'
-      io.rancher.network.tag_traffic: 'true'
+      io.rancher.network.mode: 'routed'
     logging:
       driver: json-file
       options:
