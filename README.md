@@ -8,7 +8,7 @@ so there will be nested Overlay, which leads to greater performance loss.
 
 Host-subnet network is to solve this problem, while taking full advantage of the Cloud environment itself.
 Its main principle is that in each Agent node containers have a separate subnet, different hosts different subnet containers connected together in the VPC Router through the route tables.
-Because there is no Overlay loss, this scene under the network performance is extremely high. 
+Because there is no Overlay loss, the network performance is extremely high in this case. 
 ![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fho4hf5we6j31kw0y977x.jpg)
 
 #### Requirements(AWS Example)
@@ -31,12 +31,13 @@ Create three VMs in this VPC and Subnet, one running Rancher Server and the othe
 Choose the appropriate version of Docker is very important, you can refer to the specific here:http://rancher.com/docs/rancher/v1.6/en/hosts/#supported-docker-versions
 
 Here pay attention to one step key operation,
-Due to the security mechanism of AWS, it is necessary to close the src / dst check of two Agent hosts, and the other clouds are according to their own situation: 
+Due to the security mechanism of AWS, it is necessary to disable the src/dst check of two Agent hosts, and the other clouds are according to their own situation: 
 ![](https://ws2.sinaimg.cn/mw1024/006tKfTcly1fho07y2r0uj317k0bwdgo.jpg)
 
 #### Deployment
-Deploy Rancher's latest stable version at Rancher Server node (now Rancher v1.6.4) 
-`sudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable`
+Deploy Rancher's latest stable version at Rancher Server node (now Rancher v1.6.4).
+
+```sudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable```
 
 In the Rancher UI, add Host-subnet networking catalog, repo address is https://github.com/niusmallnan/host-subnet-catalog.git: 
 ![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnz7awjioj31kw0eztah.jpg)
@@ -59,7 +60,7 @@ Note that you need to add the corresponding host label, the label key is `io.ran
 Take HostA as an example: 
 ![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhnzi0weqwj31kw0oc41c.jpg)
 
-Since we set host-subnet for HostA to 192.168.100.0/24, for HostB is 192.168.101.0/24, so the VPC RouteTable rules are updated as follows:
+Since we set host-subnet for HostA to 192.168.100.0/24, for HostB is 192.168.101.0/24, so the VPC RouteTable rules are updated as follows: 
 ![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnzmzasbsj30vi0jwab4.jpg)
 
 Deployment is complete 
@@ -102,7 +103,7 @@ cni_config:
 | :---:     | :----: |   :----:          |
 | hostNat   | true   | Generate MASQUERADE rules and DNAT rules for containers |
 | mtu       | 1500   | Explicitly set MTU to the specified value|
-| hairpinMode| true  | Set hairpin mode for interfaces on the bridge |
-| promiscMode| false | Set promiscuous mode on the bridge |
+| hairpinMode| false  | Set hairpin mode for interfaces on the bridge |
+| promiscMode| true | Set promiscuous mode on the bridge |
 
 Why do you need to enable promiscMode and disable hairpinMode? See a reference：https://github.com/rancher/rancher/issues/9090

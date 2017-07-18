@@ -2,7 +2,7 @@ Rancher Host-subnet Networking
 =================================
 
 #### About Host-subnet Networking
-Rancher现在已有的IPsec/VXLAN网络都属于Overlay模型，虽然有很好的扩展性，但是性能比较一般。尤其是当运行在Cloud环境中，由于很多Cloud环境的VM已经是Overkay网络，所以Container之间再来一层Overlay会导致更大的性能损耗。
+Rancher现在已有的IPsec/VXLAN网络都属于Overlay模型，虽然有很好的扩展性，但是性能比较一般。尤其是当运行在Cloud环境中，由于很多Cloud环境的VM已经是Overlay网络，所以Container之间再来一层Overlay会导致更大的性能损耗。
 Host-subnet网络就是为了解决这个问题，同时充分利用Cloud环境本身的特性。它的主要原理是每个Agent节点容器拥有独立的Subnet，在VPC的Router中通过RouteTable方式，将不同主机不同subnet的容器连接在一起。由于没有Overlay的损耗，这种场景下网络性能极高。 
 ![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fho4hf5we6j31kw0y977x.jpg)
 
@@ -28,7 +28,8 @@ Host-subnet网络就是为了解决这个问题，同时充分利用Cloud环境�
 
 #### 安装过程
 选择Rancher Server节点部署Rancher最新的稳定版本(现在是Rancher v1.6.4):
-`sudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable`
+
+```asudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable```
 
 在Rancher UI中添加Host-subnet networking的catalog，repo地址是https://github.com/niusmallnan/host-subnet-catalog.git： 
 ![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnz7awjioj31kw0eztah.jpg)
@@ -92,7 +93,7 @@ cni_config:
 | :---:     | :----: |   :----:          |
 | hostNat   | true   | Generate MASQUERADE rules and DNAT rules for containers |
 | mtu       | 1500   | Explicitly set MTU to the specified value|
-| hairpinMode| true  | Set hairpin mode for interfaces on the bridge |
-| promiscMode| false | Set promiscuous mode on the bridge |
+| hairpinMode| false  | Set hairpin mode for interfaces on the bridge |
+| promiscMode| true | Set promiscuous mode on the bridge |
 
 为什么enable promiscMode同时disable hairpinMode ，参见：https://github.com/rancher/rancher/issues/9090
