@@ -7,11 +7,14 @@ Especially when it is running in the Cloud environment, since the VM networking 
 so there will be nested Overlay, which leads to greater performance loss.
 
 Host-subnet network is to solve this problem, while taking full advantage of the Cloud environment itself.
-Its main principle is that in each Agent node containers have a separate subnet, different hosts different subnet containers connected together in the VPC Router through the route tables.
+Its main principle is that in each Agent node containers have a separate subnet, 
+different hosts different subnet containers connected together in the Router through the route tables.
 Because there is no Overlay loss, the network performance is extremely high in this case. 
-![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fho4hf5we6j31kw0y977x.jpg)
+![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhoembsca6j31kw0xe427.jpg)
 
 #### Requirements(AWS Example)
+Host-subnet can run on most public clouds, we just use the more popular AWS as a demo.
+
 Assuming we have configured the VPC / Subnet / RouteTable in AWS, the reference configuration is as follows:
 
 | Resource  | Name      | Setting       |
@@ -60,7 +63,9 @@ Note that you need to add the corresponding host label, the label key is `io.ran
 Take HostA as an example: 
 ![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhnzi0weqwj31kw0oc41c.jpg)
 
-Since we set host-subnet for HostA to 192.168.100.0/24, for HostB is 192.168.101.0/24, so the VPC RouteTable rules are updated as follows: 
+Since we set host-subnet for HostA to 192.168.100.0/24, for HostB is 192.168.101.0/24, 
+so the routing table rules in the router need to be manually updated.
+For example, in AWS, VPC RouteTable needs to be updated as follow: 
 ![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnzmzasbsj30vi0jwab4.jpg)
 
 Deployment is complete 

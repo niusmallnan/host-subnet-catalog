@@ -4,7 +4,7 @@ Rancher Host-subnet Networking
 #### About Host-subnet Networking
 Rancher现在已有的IPsec/VXLAN网络都属于Overlay模型，虽然有很好的扩展性，但是性能比较一般。尤其是当运行在Cloud环境中，由于很多Cloud环境的VM已经是Overlay网络，所以Container之间再来一层Overlay会导致更大的性能损耗。
 Host-subnet网络就是为了解决这个问题，同时充分利用Cloud环境本身的特性。它的主要原理是每个Agent节点容器拥有独立的Subnet，在VPC的Router中通过RouteTable方式，将不同主机不同subnet的容器连接在一起。由于没有Overlay的损耗，这种场景下网络性能极高。 
-![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fho4hf5we6j31kw0y977x.jpg)
+![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhoembsca6j31kw0xe427.jpg)
 
 #### 环境准备(以AWS为例)
 假定我们已经在AWS配置了VPC/Subnet/RouteTable，参考配置如下：
