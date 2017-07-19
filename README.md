@@ -20,23 +20,34 @@ Deploy Rancher's latest stable version at Rancher Server node (now Rancher v1.6.
 sudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable
 ```
 
-#### Create a Rancher environment based on Host-subnet
+#### Create a Rancher environment based on Host-Subnet
 
-In the Rancher UI, add Host-subnet networking catalog, repo address is [host-subnet-catalog](https://github.com/niusmallnan/host-subnet-catalog.git): 
+There are several steps involved in setting up a Rancher environment with Host-Subnet:
+1. Add the new Host-Subnet networking catalog.
+2. Add a new environment template based on Cattle and the new Host-Subnet catalog.
+3. Create a new environment based on previously created template.
+4. Upgrade the `network-manager` service in the environment for the Host-Subnet feature.
+
+Details are following.
+
+In the Rancher UI, "Admin->Settings->Catalog->Add Catalog", add the Host-Subnet networking catalog, using address:  https://github.com/niusmallnan/host-subnet-catalog.git 
 ![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnz7awjioj31kw0eztah.jpg)
 
-Create a new environment template based on `Cattle` orchestration: 
+In "Environments->Manage Environments->Add Template", add a new environment template (e.g. named "Host-Subnet"). 
 ![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fhnzak3ygtj311o0fsaay.jpg)
 
-Modify the network configuration for the Host-subnet(disable IPsec and enable Host-subnet). 
-Normally use the default configuration: 
+It should use `Cattle` orchestration. Then update the network configuration to use Host-Subnet by:
+1. Disable `Rancher IPsec` (which is the default Rancher option for network)
+2. Enable `Rancher Host-Subnet`
 ![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhp2j06qo5j31kw0ic0un.jpg)
 
-Create a new environment based on the new template: 
+In "Environments->Manage Environments->Add Environment", create a new environment based on the new template: 
 ![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fhnzf3sfwhj319e0pqq3s.jpg)
 
-Upgrade the network-manager version in the environment, here should use `niusmallnan/network-manager:packet`. 
-On how to upgrade services, please refer to: [upgrading-services-in-the-ui](http://rancher.com/docs/rancher/v1.6/en/cattle/upgrading/#upgrading-services-in-the-ui) 
+After the environment was created, we need to update the `network-manager` to use the new version of the service support Host-Subnet.
+
+In "Stacks->Infrastructure", there is a stack named `network-services` after environment created. There is a service called `network-manager` underneath. Click options for the service, then click `Upgrade` to upgrade the network-manager version in the environment. Use `niusmallnan/network-manager:packet` for the image. 
+For more details on how to upgrade services, please refer to: [upgrading-services-in-the-ui](http://rancher.com/docs/rancher/v1.6/en/cattle/upgrading/#upgrading-services-in-the-ui) 
 ![](https://ws2.sinaimg.cn/mw1024/006tKfTcly1fho0bhwqvfj314i0um75d.jpg)
 
 #### Add the hosts and configure the router
