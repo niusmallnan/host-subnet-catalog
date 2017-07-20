@@ -13,6 +13,8 @@ services:
       io.rancher.container.dns: 'true'
       io.rancher.scheduler.global: 'true'
       io.rancher.network.mode: 'routed'
+      io.rancher.network.name: 'host-subnet'
+      io.rancher.network.macsync: 'true'
     logging:
       driver: json-file
       options:
