@@ -1,129 +1,43 @@
-Rancher Host-subnet Networking
+Rancher Host-Subnet Networking
 =================================
 
 ### Requirements
-Need to prepare a number of hosts, and there should be a configurable router in your network infrastructure. 
-![](https://ws2.sinaimg.cn/mw1024/006tKfTcly1fhp0cs3566j31260nm74p.jpg)
-
-In order to run Rancher, Docker needs to be installed on the host.
-Choose the appropriate version of Docker is very important, 
-you can refer to the specific here: [supported-docker-versions](http://rancher.com/docs/rancher/v1.6/en/hosts/#supported-docker-versions)
+1. Rancher v1.6.4+.
+2. Prepare a number of subnets for hosts. Each host installed Rancher Agent will need a subnet assigned. There cannot be overlap between the subnets. Each subnet must be routable to any other subnet, normally it will be done by programming the switch.
 
 ### Deployments
 
-#### Deploy Rancher
-Assume that three hosts are used for deployment, one running Rancher Server and the other two as Rancher Agent nodes.
+#### Prepare a Rancher environment based on Host-Subnet
 
-Deploy Rancher's latest stable version at Rancher Server node (now Rancher v1.6.4).
+1. Add the new Host-Subnet networking catalog. In `Admin->Settings->Catalog->Add Catalog`, add the Host-Subnet networking catalog at: https://github.com/niusmallnan/host-subnet-catalog.git
 
-```
-sudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:stable
-```
+2. Add a new environment template based on Cattle and the new Host-Subnet catalog. In `Environments->Manage Environments->Add Template`, add a new environment template. Update the network configuration to use Host-Subnet by:
+    1. Disable `Rancher IPsec` (which is the default Rancher option for network)
+    2. Enable `Rancher Host-Subnet`
 
-#### Create a Rancher environment based on Host-Subnet
-
-There are several steps involved in setting up a Rancher environment with Host-Subnet:
-1. Add the new Host-Subnet networking catalog.
-2. Add a new environment template based on Cattle and the new Host-Subnet catalog.
 3. Create a new environment based on previously created template.
-4. Upgrade the `network-manager` service in the environment for the Host-Subnet feature.
 
-Details are following.
+4. Upgrade the `network-manager` service in the environment for the Host-Subnet feature. In `Stacks->Infrastructure`, there will be a stack named `network-services`, includes a service named `network-manager`. Click options for the `network-manager` service, then click `Upgrade`. Use `niusmallnan/network-manager:packet` for `Select Image` in the following dialog, then continue to upgrade.
 
-In the Rancher UI, "Admin->Settings->Catalog->Add Catalog", add the Host-Subnet networking catalog, using address:  https://github.com/niusmallnan/host-subnet-catalog.git 
-![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnz7awjioj31kw0eztah.jpg)
+#### Adding a host to Rancher environment
+1. In `Infrastructure->Hosts->Add Host`, select `Custom`, take a note of the related `docker run` command. It will look like:
+    ```
+    sudo docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.5 http://172.31.5.93:8080/v1/scripts/04033066C0164CF25094:1483142400000:KQrf2wQfJtdKxLHYuprV6LfWuQ
+    ```
+2. For each host to be added in the environment, user must add a specific Host-Subnet label. The label key is `io.rancher.network.host_subnet.cidr`, and the value is host's subnet CIDR. User need to add an additional parameter for the label to the command in step 1.
 
-In "Environments->Manage Environments->Add Template", add a new environment template (e.g. named "Host-Subnet"). 
-![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fhnzak3ygtj311o0fsaay.jpg)
+   For example, for a host with subnet `192.168.100.0/24`, the additional parameter will be: `-e CATTLE_HOST_LABELS='io.rancher.network.host_subnet.cidr=192.168.100.0/24'`
 
-It should use `Cattle` orchestration. Then update the network configuration to use Host-Subnet by:
-1. Disable `Rancher IPsec` (which is the default Rancher option for network)
-2. Enable `Rancher Host-Subnet`
-![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhp2j06qo5j31kw0ic0un.jpg)
+   The final command will look like:
+    ```
+    sudo docker run -e CATTLE_HOST_LABELS='io.rancher.network.host_subnet.cidr=192.168.100.0/24'  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.5 http://172.31.5.93:8080/v1/scripts/04033066C0164CF25094:1483142400000:KQrf2wQfJtdKxLHYuprV6LfWuQ
+    ```
 
-In "Environments->Manage Environments->Add Environment", create a new environment based on the new template: 
-![](https://ws1.sinaimg.cn/mw1024/006tKfTcly1fhnzf3sfwhj319e0pqq3s.jpg)
+Done!
 
-After the environment was created, we need to update the `network-manager` to use the new version of the service support Host-Subnet.
+#### More
 
-In "Stacks->Infrastructure", there is a stack named `network-services` after environment created. There is a service called `network-manager` underneath. Click options for the service, then click `Upgrade` to upgrade the network-manager version in the environment. Use `niusmallnan/network-manager:packet` for the image. 
-For more details on how to upgrade services, please refer to: [upgrading-services-in-the-ui](http://rancher.com/docs/rancher/v1.6/en/cattle/upgrading/#upgrading-services-in-the-ui) 
-![](https://ws2.sinaimg.cn/mw1024/006tKfTcly1fho0bhwqvfj314i0um75d.jpg)
+To learn more about the details of Host-Subnet, please refer to: [design.md](./docs/design.md)
 
-#### Add the hosts and configure the router
-Add an agent node to the environment.
-Note that you need to add the corresponding host label, the label key is `io.rancher.network.host_subnet.cidr`.
-Take HostA as an example: 
-![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhnzi0weqwj31kw0oc41c.jpg) 
-Each host is configured with different host-subnet, so when registering other hosts, you need to replace the value of label `io.rancher.network.host_subnet.cidr`.
-
-Assume that we set host-subnet for HostA to 192.168.100.0/24, for HostB is 192.168.101.0/24, 
-so the routing table rules in the router need to be manually updated:
-
-```
-......
-ip route add 192.168.100.0/24 via <HostA-IP> dev <interface>
-ip route add 192.168.101.0/24 via <HostB-IP> dev <interface>
-......
-```
-
-#### Check the results
-After the deployment is complete, you can see that all infrastructure services are normal. 
-![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fho0f23zroj30ug11odj5.jpg)
-
-### Running on AWS
-Host-subnet can run on most public clouds, we just use the more popular AWS as a demo.
-
-Here pay attention to one step key operation,
-Due to the security mechanism of AWS, it is necessary to disable the src/dst check of all the agent hosts, and the other clouds are according to their own situation: 
-![](https://ws2.sinaimg.cn/mw1024/006tKfTcly1fho07y2r0uj317k0bwdgo.jpg)
-
-Then you can follow the deployment steps described above.
-
-Please note in AWS, VPC RouteTable needs to be updated as follow: 
-![](https://ws4.sinaimg.cn/mw1024/006tKfTcly1fhnzmzasbsj30vi0jwab4.jpg)
-
-### Other Notes
-About host labels in host-subnet networking:
-
-| Key                                       | Required | Sample         |
-|       :---:                               | :----:|   :----:          |
-| io.rancher.network.host_subnet.cidr       | true  | 192.168.100.0/24  |
-| io.rancher.network.host_subnet.range_start| false | 192.168.100.20    |
-| io.rancher.network.host_subnet.range_end  | false | 192.168.100.200   |
-| io.rancher.network.host_subnet.gateway    | false | 192.168.100.1 <br /> It will be the first IP address in the subnet if not specified             |
-
-About the cni config file for host-subnet networking:
-
-```
-cni_config:
-    '10-host-subnet.conf':
-      name: host-subnet-network
-      type: rancher-bridge
-      bridge: docker0
-      isDebugLevel: ${RANCHER_DEBUG}
-      logToFile: /var/log/rancher-cni.log
-      isDefaultGateway: true
-      hostNat: {{ .Values.HOST_NAT  }}
-      hairpinMode: {{  .Values.RANCHER_HAIRPIN_MODE  }}
-      promiscMode: {{ .Values.RANCHER_PROMISCUOUS_MODE  }}
-      mtu: ${MTU}
-      ipam:
-        type: rancher-host-local-ipam
-        isDebugLevel: ${RANCHER_DEBUG}
-        logToFile: /var/log/rancher-cni.log
-        routes:
-        - dst: 169.254.169.250/32
-```
-
-| Key       | Default| Description       |
-| :---:     | :----: |   :----:          |
-| hostNat   | true   | Generate MASQUERADE rules and DNAT rules for containers |
-| mtu       | 1500   | Explicitly set MTU to the specified value|
-| hairpinMode| false  | Set hairpin mode for interfaces on the bridge |
-| promiscMode| true | Set promiscuous mode on the bridge |
-
-Why do you need to enable promiscMode and disable hairpinMode? See a [reference](https://github.com/rancher/rancher/issues/9090)
-
-To learn more about the details of Host-subnet, please refer to: [design.md](./docs/design.md)
+For how to use Host-Subnet on AWS, please refer to: [aws.md](./docs/aws.md)
 
