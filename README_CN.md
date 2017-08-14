@@ -46,7 +46,7 @@ Host-subnet网络就是为了解决这个问题，同时充分利用Cloud环境�
 更新环境中的network-manger版本，由于当前代码还未合并，所以需要指定一个定制版本（niusmallnan/network-manager:packet），未来合并之后，无需做此步： 
 ![](https://ws2.sinaimg.cn/mw1024/006tKfTcly1fho0bhwqvfj314i0um75d.jpg)
 
-在新的环境中添加Agent节点，注意要加入对应的Host Label，Label key为`io.rancher.network.host_subnet.cidr`，以HostA为例： 
+在新的环境中添加Agent节点，注意要加入对应的Host Label，Label key为`io.rancher.network.per_host_subnet.cidr`，以HostA为例： 
 ![](https://ws3.sinaimg.cn/mw1024/006tKfTcly1fhnzi0weqwj31kw0oc41c.jpg)
 
 由于我们设定HostA的host-subnet为192.168.100.0/24，HostB的host-subnet为192.168.101.0/24，所以VPC的RouteTable规则更新如下： 
@@ -60,10 +60,10 @@ Host Label说明
 
 | Key                                       | Required | Sample         |
 |       :---:                               | :----:|   :----:          |
-| io.rancher.network.host_subnet.cidr       | true  | 192.168.100.0/24  |
-| io.rancher.network.host_subnet.range_start| false | 192.168.100.20    |
-| io.rancher.network.host_subnet.range_end  | false | 192.168.100.200   |
-| io.rancher.network.host_subnet.gateway    | false | 192.168.100.1 <br /> It will be the first IP address in the subnet if not specified             |
+| io.rancher.network.per_host_subnet.cidr       | true  | 192.168.100.0/24  |
+| io.rancher.network.per_host_subnet.range_start| false | 192.168.100.20    |
+| io.rancher.network.per_host_subnet.range_end  | false | 192.168.100.200   |
+| io.rancher.network.per_host_subnet.gateway    | false | 192.168.100.1 <br /> It will be the first IP address in the subnet if not specified             |
 
 CNI配置说明 
 下面是一份CNI CONFIG，当然你也可以在对应的compose文件中看到其内容：

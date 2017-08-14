@@ -1,5 +1,5 @@
 .catalog:
-  name: "host-subnet"
+  name: "per-host-subnet"
   version: "v0.0.1"    # Keep this in sync with calico/node tag version
   minimum_rancher_version: v1.6.0-alpha1
   maximum_rancher_version: v1.6.2
@@ -17,17 +17,18 @@
       default: 1500
       type: int
 
-host-subnet:
+per-host-subnet:
   network_driver:
     name: Rancher Host Subnet
     default_network:
-      name: host-subnet
+      name: per-host-subnet
       host_ports: true
     cni_config:
-      '10-host-subnet.conf':
-        name: host-subnet-network
+      '10-per-host-subnet.conf':
+        name: per-host-subnet-network
         type: rancher-bridge
         bridge: docker0
+        bridgeSubnet: "__host_label__: io.rancher.network.per_host_subnet.subnet"
         isDebugLevel: ${RANCHER_DEBUG}
         logToFile: /var/log/rancher-cni.log
         isDefaultGateway: true
@@ -38,5 +39,9 @@ host-subnet:
           type: rancher-host-local-ipam
           isDebugLevel: ${RANCHER_DEBUG}
           logToFile: /var/log/rancher-cni.log
+          subnet: "__host_label__: io.rancher.network.per_host_subnet.subnet"
+          rangeStart: "__host_label__: io.rancher.network.per_host_subnet.range_start"
+          rangeEnd: "__host_label__: io.rancher.network.per_host_subnet.range_end"
+          gateway: "__host_label__: io.rancher.network.per_host_subnet.gateway"
           routes:
           - dst: 169.254.169.250/32

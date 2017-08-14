@@ -1,5 +1,5 @@
 .catalog:
-  name: "host-subnet"
+  name: "per-host-subnet"
   version: "v0.0.2"
   minimum_rancher_version: v1.6.3-rc1
   questions:
