@@ -35,6 +35,7 @@ services:
           hairpinMode: {{  .Values.RANCHER_HAIRPIN_MODE  }}
           promiscMode: {{ .Values.RANCHER_PROMISCUOUS_MODE  }}
           mtu: ${MTU}
+          isPerHostSubnet: true
           ipam:
             type: rancher-host-local-ipam
             subnet: "__host_label__: io.rancher.network.per_host_subnet.subnet"
