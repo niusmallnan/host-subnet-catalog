@@ -9,6 +9,12 @@
       type: "string"
       default: "docker0"
       required: true
+    - variable: "RANCHER_METADATA_ADDRESS"
+      label: "Metadata IP Address"
+      description: "IP address of rancher-metadata service. Default is `169.254.169.250`"
+      type: "string"
+      default: "169.254.169.250"
+      required: true
     - variable: "RANCHER_DEBUG"
       label: "Enable Debug Logs"
       description: "This will enable very verbose debug logs."

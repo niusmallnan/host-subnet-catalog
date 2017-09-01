@@ -1,5 +1,21 @@
 version: '2'
 services:
+  routes-updater:
+    privileged: true
+    pid: host
+    network_mode: host
+    image: niusmallnan/routes-updater:dev
+    command: routes-updater -p hostgw
+    environment:
+      RANCHER_DEBUG: '${RANCHER_DEBUG}'
+      RANCHER_METADATA_ADDRESS: '${RANCHER_METADATA_ADDRESS}'
+    logging:
+      driver: json-file
+      options:
+        max-size: 25m
+        max-file: '2'
+    labels:
+      io.rancher.scheduler.global: 'true'
   per-host-subnet:
     privileged: true
     image: niusmallnan/rancher-host-subnet:v0.0.1
