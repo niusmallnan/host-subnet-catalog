@@ -1,14 +1,15 @@
 version: '2'
 services:
-  routes-updater:
+  per-host-subnet:
     privileged: true
     pid: host
     network_mode: host
-    image: niusmallnan/routes-updater:dev
-    command: routes-updater -p hostgw
+    image: niusmallnan/per-host-subnet:dev
     environment:
       RANCHER_DEBUG: '${RANCHER_DEBUG}'
       RANCHER_METADATA_ADDRESS: '${RANCHER_METADATA_ADDRESS}'
+      RANCHER_ENABLE_ROUTE_UPDATE: '${RANCHER_ENABLE_ROUTE_UPDATE}'
+      RANCHER_ROUTE_UPDATE_PROVIDER: '${RANCHER_ROUTE_UPDATE_PROVIDER}'
     logging:
       driver: json-file
       options:
@@ -16,7 +17,7 @@ services:
         max-file: '2'
     labels:
       io.rancher.scheduler.global: 'true'
-  per-host-subnet:
+  cni-driver:
     privileged: true
     image: niusmallnan/rancher-host-subnet:v0.0.1
     command: sh -c "touch /var/log/rancher-cni.log && exec tail ---disable-inotify -F /var/log/rancher-cni.log"
@@ -51,7 +52,6 @@ services:
           hairpinMode: {{  .Values.RANCHER_HAIRPIN_MODE  }}
           promiscMode: {{ .Values.RANCHER_PROMISCUOUS_MODE  }}
           mtu: ${MTU}
-          isPerHostSubnet: true
           ipam:
             type: rancher-host-local-ipam
             subnet: "__host_label__: io.rancher.network.per_host_subnet.subnet"
@@ -61,4 +61,4 @@ services:
             isDebugLevel: ${RANCHER_DEBUG}
             logToFile: /var/log/rancher-cni.log
             routes:
-            - dst: 169.254.169.250/32
+            - dst: {{ .Values.RANCHER_METADATA_ADDRESS }}/32

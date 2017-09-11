@@ -27,6 +27,20 @@
       required: true
       default: 1500
       type: int
+    - variable: "RANCHER_ENABLE_ROUTE_UPDATE"
+      label: "Enable Route Update"
+      description: "This will enable route update."
+      type: "boolean"
+      default: "true"
+      required: true
+    - variable: "RANCHER_ROUTE_UPDATE_PROVIDER"
+      label: "Route Update Provider"
+      description: "The provider for route update."
+      type: "enum"
+      default: "hostgw"
+      required: true
+      options:
+      - hostgw
     - variable: "RANCHER_HAIRPIN_MODE"
       label: "Enable Hairpin mode"
       description: "If this is enabled, Promiscuous mode needs to be disabled."
