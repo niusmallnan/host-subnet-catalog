@@ -1,7 +1,7 @@
-name: Rancher Host-subnet Networking
+name: Rancher Per-Host-subnet Networking
 description: |
-  Rancher Networking plugin using host-subnet.
-version: v0.0.3
+  Rancher Networking plugin using per-host-subnet.
+version: v0.1.0
 category: Networking
 labels:
   io.rancher.certified: rancher
