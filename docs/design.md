@@ -16,7 +16,7 @@ Because there is no Overlay loss, the network performance is extremely high in t
 
 | Key                                       | Required | Sample         |
 |       :---:                               | :----:|   :----:          |
-| io.rancher.network.per_host_subnet.cidr       | true  | 192.168.100.0/24  |
+| io.rancher.network.per_host_subnet.subnet     | true  | 192.168.100.0/24  |
 | io.rancher.network.per_host_subnet.range_start| false | 192.168.100.20    |
 | io.rancher.network.per_host_subnet.range_end  | false | 192.168.100.200   |
 | io.rancher.network.per_host_subnet.gateway    | false | 192.168.100.1 <br /> It will be the first IP address in the subnet if not specified             |

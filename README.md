@@ -24,13 +24,13 @@ Rancher Host-Subnet Networking
     ```
     sudo docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.5 http://172.31.5.93:8080/v1/scripts/04033066C0164CF25094:1483142400000:KQrf2wQfJtdKxLHYuprV6LfWuQ
     ```
-2. For each host to be added in the environment, user must add a specific Host-Subnet label. The label key is `io.rancher.network.per_host_subnet.cidr`, and the value is host's subnet CIDR. User need to add an additional parameter for the label to the command in step 1.
+2. For each host to be added in the environment, user must add a specific Host-Subnet label. The label key is `io.rancher.network.per_host_subnet.subnet`, and the value is host's subnet CIDR. User need to add an additional parameter for the label to the command in step 1.
 
-   For example, for a host with subnet `192.168.100.0/24`, the additional parameter will be: `-e CATTLE_HOST_LABELS='io.rancher.network.per_host_subnet.cidr=192.168.100.0/24'`
+   For example, for a host with subnet `192.168.100.0/24`, the additional parameter will be: `-e CATTLE_HOST_LABELS='io.rancher.network.per_host_subnet.subnet=192.168.100.0/24'`
 
    The final command will look like:
     ```
-    sudo docker run -e CATTLE_HOST_LABELS='io.rancher.network.per_host_subnet.cidr=192.168.100.0/24'  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.5 http://172.31.5.93:8080/v1/scripts/04033066C0164CF25094:1483142400000:KQrf2wQfJtdKxLHYuprV6LfWuQ
+    sudo docker run -e CATTLE_HOST_LABELS='io.rancher.network.per_host_subnet.subnet=192.168.100.0/24'  --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.5 http://172.31.5.93:8080/v1/scripts/04033066C0164CF25094:1483142400000:KQrf2wQfJtdKxLHYuprV6LfWuQ
     ```
 
 Done!
