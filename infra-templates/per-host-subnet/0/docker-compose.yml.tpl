@@ -1,6 +1,6 @@
 version: '2'
 
-{{- $netImage:="rancher/net:v0.13.0" }}
+{{- $netImage:="niusmallnan/net:v0.13.0-dev" }}
 
 services:
   per-host-subnet:
