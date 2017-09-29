@@ -1,10 +1,14 @@
 version: '2'
+
+{{- $netImage:="rancher/net:v0.13.0" }}
+
 services:
   per-host-subnet:
     privileged: true
     pid: host
     network_mode: host
-    image: niusmallnan/per-host-subnet:dev
+    image: {{$netImage}}
+    command: per-host-subnet
     environment:
       RANCHER_DEBUG: '${RANCHER_DEBUG}'
       RANCHER_METADATA_ADDRESS: '${RANCHER_METADATA_ADDRESS}'
@@ -19,12 +23,16 @@ services:
       io.rancher.scheduler.global: 'true'
   cni-driver:
     privileged: true
-    image: niusmallnan/rancher-host-subnet:v0.0.1
-    command: sh -c "touch /var/log/rancher-cni.log && exec tail ---disable-inotify -F /var/log/rancher-cni.log"
+    image: {{$netImage}}
+    command: start-cni-driver.sh
     network_mode: host
     pid: host
+    environment:
+      RANCHER_DEBUG: '${RANCHER_DEBUG}'
     volumes:
     - /var/lib/rancher/per_host_subnet:/var/lib/cni/networks
+    - /var/run/docker.sock:/var/run/docker.sock
+    - rancher-cni-driver:/opt/cni-driver
     labels:
       io.rancher.network.cni.binary: 'rancher-bridge'
       io.rancher.container.dns: 'true'
@@ -35,10 +43,14 @@ services:
         max-size: 25m
         max-file: '2'
     network_driver:
-      name: Rancher Host Subnet
+      name: Rancher Per Host Subnet
       default_network:
         name: per-host-subnet
-        host_ports: true
+        host_ports: {{ .Values.HOST_PORTS }}
+        dns:
+        - 169.254.169.250
+        dns_search:
+        - rancher.internal
       cni_config:
         '10-per-host-subnet.conf':
           name: per-host-subnet-network
@@ -57,8 +69,5 @@ services:
             subnet: "__host_label__: io.rancher.network.per_host_subnet.subnet"
             rangeStart: "__host_label__: io.rancher.network.per_host_subnet.range_start"
             rangeEnd: "__host_label__: io.rancher.network.per_host_subnet.range_end"
-            gateway: "__host_label__: io.rancher.network.per_host_subnet.gateway"
             isDebugLevel: ${RANCHER_DEBUG}
             logToFile: /var/log/rancher-cni.log
-            routes:
-            - dst: {{ .Values.RANCHER_METADATA_ADDRESS }}/32

@@ -1,4 +1,4 @@
-name: Rancher Per-Host-subnet Networking
+name: Rancher Per-Host-Subnet Networking
 description: |
   Rancher Networking plugin using per-host-subnet.
 version: v0.1.0
